@@ -53,7 +53,9 @@ pub fn convert_integer_to_float_audio(
 /// ```
 pub fn convert_stereo_to_mono_audio(samples: &[f32]) -> Result<Vec<f32>, WhisperError> {
     if samples.len() & 1 != 0 {
-        return Err(WhisperError::HalfSampleMissing(samples.len()));
+        // return Err(WhisperError::HalfSampleMissing(samples.len()));
+        // if it's single sample, we can just return it as is
+        return Ok(samples.to_vec());
     }
 
     Ok(samples
