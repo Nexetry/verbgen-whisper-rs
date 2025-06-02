@@ -4,3 +4,4 @@
 /.vscode
 *.bin
 *.wav
+.DS_Store

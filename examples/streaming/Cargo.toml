@@ -1,0 +1,15 @@
+[package]
+name = "streaming"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+hound = "3"
+whisper-rs = { path = "../.." }
+cpal = "0.15"
+ringbuf = "0.4"
+tokio = { version = "1", features = ["full"] }
+chrono = "0.4"
+ctrlc = "3.4.7"
