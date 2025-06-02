@@ -4,7 +4,9 @@ wget https://github.com/ggerganov/whisper.cpp/raw/master/samples/jfk.wav
 cargo run --example basic_use ggml-tiny.bin jfk.wav
 */
 
-use whisper_rs::{FullParams, SamplingStrategy, WhisperContext, WhisperContextParameters};
+use whisper_rs::{
+    FullParams, SamplingStrategy, WhisperContext, WhisperContextParameters, WhisperState,
+};
 
 fn main() {
     let model_path = std::env::args()
@@ -13,7 +15,7 @@ fn main() {
     let wav_path = std::env::args()
         .nth(2)
         .expect("Please specify path to wav file");
-    let language = "en";
+    let language = "zh";
 
     let samples: Vec<i16> = hound::WavReader::open(wav_path)
         .unwrap()
@@ -29,14 +31,24 @@ fn main() {
 
     let mut params = FullParams::new(SamplingStrategy::Greedy { best_of: 1 });
 
+    params.set_segment_callback_safe(|segment: whisper_rs::SegmentCallbackData| {
+        // This is a safe callback that will be called for each new segment
+        // It is called from the main thread, so you can do anything you want here
+        // For example, you can print the segment text to stdout
+        println!(
+            "Segment got: [{} - {}]: {}",
+            segment.start_timestamp, segment.end_timestamp, segment.text
+        );
+    });
+
     // and set the language to translate to to english
     params.set_language(Some(&language));
 
     // we also explicitly disable anything that prints to stdout
     params.set_print_special(false);
     params.set_print_progress(false);
-    params.set_print_realtime(false);
-    params.set_print_timestamps(false);
+    params.set_print_realtime(true);
+    params.set_print_timestamps(true);
 
     // we must convert to 16KHz mono f32 samples for the model
     // some utilities exist for this
